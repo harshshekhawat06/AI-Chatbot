@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Azure Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f4f4;
+        }
+
+        #chatbox {
+            height: 400px;
+            overflow-y: scroll;
+            padding: 10px;
+            background: white;
+            border: 1px solid #ccc;
+        }
+
+        .user {
+            text-align: right;
+            color: blue;
+            margin: 5px;
+        }
+
+        .bot {
+            text-align: left;
+            color: green;
+            margin: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <h2>Azure OpenAI Chatbot</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="message" placeholder="Type your message..." />
+    <button onclick="sendMessage()">Send</button>
+    <p id="tokens"></p>
+
+    <script>
+        async function sendMessage() {
+            const msg = document.getElementById("message").value;
+            if (!msg) return;
+
+            document.getElementById("chatbox").innerHTML += `<div class="user"><b>You:</b> ${msg}</div>`;
+
+            const res = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: msg })
+            });
+            const data = await res.json();
+
+            document.getElementById("chatbox").innerHTML += `<div class="bot"><b>Awal's Bot:</b> ${data.reply}</div>`;
+            document.getElementById("tokens").innerText = `Tokens used this turn: ${data.tokens_used}`;
+
+            document.getElementById("message").value = "";
+            document.getElementById("chatbox").scrollTop = document.getElementById("chatbox").scrollHeight;
+        }
+    </script>
+</body>
+
+</html>
